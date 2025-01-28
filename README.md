@@ -1,129 +1,70 @@
-// Import necessary libraries
+// A-R-I-A-T-H-E Editor Full Plug and Play Code (React Native Example)
+
+// Required Libraries
+import React, { useState } from 'react';
+import { Modal, TextInput, Button, Text, View } from 'react-native';
+import { ImageEditor, AudioUploader } from 'react-native-media-library';  // Example media library
+
+// Image Editor Feature - Image Manipulation
 const sharp = require('sharp');
 const fabric = require('fabric').fabric;
 const Caman = require('caman').Caman;
 const PIXI = require('pixi.js');
-import React, { useState } from 'react';
-import { Modal, Button, Text, TextInput, View } from 'react-native';
 
-// Image Editing Features
-
-// 1. Crop and Resize
-const cropAndResizeImage = (inputImage) => {
+// Image Crop and Resize
+const resizeImage = (inputImage, width, height) => {
   sharp(inputImage)
-    .resize(800, 600)
+    .resize(width, height)
     .toFile('output-image.jpg', (err, info) => {
       if (err) throw err;
       console.log(info);
     });
 };
 
-// 2. Rotate and Flip
+// Rotate and Flip
 const rotateAndFlipImage = (inputImage) => {
   sharp(inputImage)
-    .rotate(90) // Rotate by 90°
-    .flip() // Flip vertically
+    .rotate(90)
+    .flip()
     .toFile('output-image.jpg', (err, info) => {
       if (err) throw err;
       console.log(info);
     });
 };
 
-// 3. Adjust Brightness, Contrast, and Saturation
-const adjustBrightnessContrastSaturation = (inputImage) => {
-  sharp(inputImage)
-    .modulate({
-      brightness: 1.2,
-      saturation: 1.5,
-      contrast: 1.5
-    })
-    .toFile('output-image.jpg', (err, info) => {
-      if (err) throw err;
-      console.log(info);
-    });
-};
-
-// 4. Apply Filters
-const applyFilters = (inputImage) => {
+// Apply Filters
+const applyFilter = (inputImage) => {
   Caman(inputImage, function () {
-    this.greyscale().sepia().render(function () {
+    this.sepia().greyscale().render(function () {
       this.save('output-image.jpg');
     });
   });
 };
 
-// 5. Add Text Overlay
-const addTextOverlay = (inputImage) => {
-  let canvas = new fabric.Canvas('canvas');
-  fabric.Image.fromURL(inputImage, (img) => {
-    canvas.add(img);
-    let text = new fabric.Text('Hello, World!', { left: 100, top: 100 });
-    canvas.add(text);
-    canvas.renderAll();
-  });
-};
-
-// 6. Freehand Drawing (using Fabric.js)
-const freehandDrawing = () => {
-  const canvas = new fabric.Canvas('canvas', { isDrawingMode: true });
-  canvas.freeDrawingBrush.color = 'red';
-  canvas.freeDrawingBrush.width = 5;
-};
-
-// 7. Sharpen and Blur
-const sharpenAndBlur = (inputImage) => {
-  sharp(inputImage)
-    .sharpen()
-    .toFile('output-image.jpg', (err, info) => {
-      if (err) throw err;
-      console.log(info);
-    });
-};
-
-// 8. Color Adjustment (Hue, Saturation, Lightness)
-const adjustHueSaturationLightness = (inputImage) => {
-  sharp(inputImage)
-    .modulate({
-      hue: 180,
-      saturation: 1.2,
-      lightness: 0.5
-    })
-    .toFile('output-image.jpg', (err, info) => {
-      if (err) throw err;
-      console.log(info);
-    });
-};
-
-// 9. Add Borders or Frames
-const addBorders = (inputImage) => {
-  sharp(inputImage)
-    .extend({
-      top: 10,
-      bottom: 10,
-      left: 10,
-      right: 10,
-      background: { r: 255, g: 255, b: 255 }
-    })
-    .toFile('output-image.jpg', (err, info) => {
-      if (err) throw err;
-      console.log(info);
-    });
-};
-
-// 10. Sticker and Emoji Placement (using PixiJS)
-const addStickersEmojis = () => {
-  let app = new PIXI.Application({ width: 800, height: 600 });
+// Sticker/Emoji Placement
+const placeSticker = (imageURL) => {
+  const app = new PIXI.Application({ width: 800, height: 600 });
   document.body.appendChild(app.view);
 
   PIXI.loader.add('emoji', 'emoji.png').load(function (loader, resources) {
-    let emoji = new PIXI.Sprite(resources.emoji.texture);
+    const emoji = new PIXI.Sprite(resources.emoji.texture);
     emoji.x = 100;
     emoji.y = 100;
     app.stage.addChild(emoji);
   });
 };
 
-// Passcode Protected Terms & Conditions Page (React Native Example)
+// Adding Audio to Image
+const addAudioToImage = (imageFile, audioFile) => {
+  const audioUploader = new AudioUploader();
+  audioUploader.upload(audioFile, imageFile).then((result) => {
+    console.log('Audio added to image:', result);
+  }).catch((error) => {
+    console.error('Error adding audio to image:', error);
+  });
+};
+
+// Passcode Protected Terms & Conditions
 const TermsPage = () => {
   const [passcode, setPasscode] = useState('');
   const [accessGranted, setAccessGranted] = useState(false);
@@ -155,7 +96,7 @@ const TermsPage = () => {
   );
 };
 
-// Pop-up Terms and Conditions Modal (React Native)
+// Pop-up Terms and Conditions Modal
 const TermsPopup = () => {
   const [modalVisible, setModalVisible] = useState(true);
 
@@ -177,17 +118,19 @@ const TermsPopup = () => {
   );
 };
 
-// Dark Blue Matte Background (CSS Example)
-const darkBlueMatteBackground = {
-  backgroundColor: '#2c3e50', // Dark Blue
-  backgroundImage: 'linear-gradient(to bottom, #34495e, #2c3e50)', // Matte effect
+// Dark Blue Matte Background (for styling)
+const darkBlueBackground = {
+  container: {
+    backgroundColor: '#2c3e50', // Dark Blue
+    backgroundImage: 'linear-gradient(to bottom, #34495e, #2c3e50)', // Matte effect
+  },
 };
 
-const AritheEditorApp = () => {
+export default function AritheEditorApp() {
   return (
-    <View style={darkBlueMatteBackground}>
+    <View style={darkBlueBackground.container}>
       <TermsPopup />
       <TermsPage />
     </View>
   );
-};
+}
